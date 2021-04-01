@@ -35,10 +35,7 @@ public class Main {
         minus = H % 2 != 0 ? 2 : 1;
         m = centerX - minus;
         for (int i = centerX; i < H; i++) {
-            for (int j = 0; j < W; j++) {
-                intense[i][j] = intense[m][j];
-            }
-            m--;
+            intense[i] = intense[m--];
         }
 
         for (int i = 0; i < H; i++) {
