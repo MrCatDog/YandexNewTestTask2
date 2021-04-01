@@ -11,43 +11,35 @@ public class Main {
         W = in.nextInt();
         H = in.nextInt();
         intense = new int[H][W];
-        int row_min, row_max, col_min, col_max;
-        //int rows = H/2, columns = W/2;
-        int rows = H, columns = W;
+        int centerX = (int) (0.5 + H / 2.0), centerY = (int) (W / 2.0 + 0.5);
+        int furthestDistanceFromCentre = euclideanDistance(0, 0, centerX, centerY);
 
-        long time = System.currentTimeMillis();
-
-
-        for (row_min = 0; row_min < rows; row_min++) {
-            for (row_max = row_min; row_max < rows; row_max++) {
-                for (col_min = 0; col_min < columns; col_min++) {
-                    for (col_max = col_min; col_max < columns; col_max++) {
-                        increaseRectangle(row_min, col_min, row_max, col_max);
-                    }
-                }
+        for (int i = 0; i < centerX; i++) {
+            for (int j = 0; j < centerY; j++) {
+                intense[i][j] = furthestDistanceFromCentre - euclideanDistance(i, j, centerX, centerY);//here you can add some number to increase color intense
             }
         }
 
+        //Further code is optional. You can just run cycle one(both sizes are odd), two(one size odd) or four times (both sizes are even).
+        int minus = W % 2 != 0 ? 2 : 1; //skip center line for odd and repeat for even
 
-        for(int i = 0; i < H; i++) {
-            for(int j = 0; j < W; j++) {
-                System.out.print(intense[i][j]+" ");
-            }
-            System.out.println();
-        }
-
-        //попытка заполнить только 2-ую четверть
-        /*int k = rows, m;
-        for(int i = rows+1; i <= rows*2+1; i++) {
-            m=columns;
-            for(int j = columns+1; j <= columns*2+1; j++) {
-                intense[i][j] = intense[k][m];
+        int m;
+        for (int i = 0; i < centerX; i++) {
+            m = centerY - minus;
+            for (int j = centerY; j < W; j++) {
+                intense[i][j] = intense[i][m];
                 m--;
             }
-            k--;
         }
 
-        Collections.reverse(Arrays.asList(intense));*/
+        minus = H % 2 != 0 ? 2 : 1;
+        m = centerX - minus;
+        for (int i = centerX; i < H; i++) {
+            for (int j = 0; j < W; j++) {
+                intense[i][j] = intense[m][j];
+            }
+            m--;
+        }
 
         for (int i = 0; i < H; i++) {
             System.out.print(sumOfRow(i) + " ");
@@ -56,24 +48,15 @@ public class Main {
         for (int i = 0; i < W; i++) {
             System.out.print(sumOfColumn(i) + " ");
         }
-        System.out.println();
-        System.out.println((System.currentTimeMillis() - time)*0.001);
-
     }
 
-    private static void increaseRectangle(int fromRow, int fromColumn, int toRow, int toColumn) {
-        for (int i = fromRow; i <= toRow; i++) {
-            for (int j = fromColumn; j <= toColumn; j++) {
-                intense[i][j]++;
-            }
-
-            //попытка перехода к сингллайн массиву (из-за нескольких определений внутри аж 5 цикла время увеличилось)
-            /*int[] singleLine = intense[i];
-            for (int j = fromColumn; j <= toColumn; j++) {
-                singleLine[j]++;
-            }
-            intense[i] = singleLine;*/
-        }
+    public static int euclideanDistance(int x1, int y1, int x2, int y2) {
+        return (int) Math.floor(
+                Math.sqrt(
+                        Math.pow(x1 - x2, 2) +
+                                Math.pow(y1 - y2, 2)
+                )
+        );
     }
 
     private static int sumOfRow(int rowIndex) {
@@ -91,5 +74,14 @@ public class Main {
             sum += intense[i][columnIndex];
         }
         return sum;
+    }
+
+    public static void showIntense() {
+        for (int i = 0; i < H; i++) {
+            for (int j = 0; j < W; j++) {
+                System.out.print(intense[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }
